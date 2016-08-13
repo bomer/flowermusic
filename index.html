@@ -16,6 +16,7 @@
 
 <body>
 	<div id="canvas-container">
+		<button id="save" style="position: absolute;left: auto;right: auto;width: 100%;"type="button" onclick="saveData()">Save Output (360 to go)</button>
 		<canvas id="canvas" width="200" height="100" style="border:0px">
 		</canvas>
 	</div>	
@@ -25,7 +26,9 @@
 		var point={};
 		var mouse={};
 		var points=[];
+		var ouput=[];
 		var img ;
+		var togo=360;
 		var frameCounter=0;
 		function init() {
 			canvas.width  = window.innerWidth;
@@ -47,6 +50,11 @@
 
 init();
 
+function saveData (){
+	console.log(JSON.stringify(ouput));
+
+}
+
 
 function drawImageScaled(img, ctx) {
 	var canvas = ctx.canvas ;
@@ -65,35 +73,41 @@ function updateGame() {
 	// if(frameCounter==0)
 	// 	points = [];
 	if (mouse.x){
+		
 		//For every degree
 		for (var i = 0; i < 360; i++) {
 			if (!points[i]){ //if needs initing
 				console.log('Initing '+ i);
 				points[i]={};
 				points[i].steps=getSteps(i);	
-				points[i].done=false;		
-			}
-				    var x = frameCounter * points[i].steps.x;
-	        		var y = frameCounter * points[i].steps.y;	    			
-			var p = ctx.getImageData(mouse.x+x, mouse.y+y, 1, 1).data; 
-			var r = p[0];
-		    var g = p[1];
-		    var b = p[2];
-			if(r <=0 && g <=0 && b<=0) {
-				points[i].done=true;
-				points[i].distance=distance(mouse.x+x,mouse.y+y);
+				points[i].done=false;	
+				
 			}
 			if(!points[i].done){
+			    var x = frameCounter * points[i].steps.x;
+	    		var y = frameCounter * points[i].steps.y;	    			
+				var p = ctx.getImageData(mouse.x+x, mouse.y+y, 1, 1).data; 
+				var r = p[0];
+			    var g = p[1];
+			    var b = p[2];
+				if(r <=0 && g <=0 && b<=0) {
+					points[i].done=true;
+					points[i].distance=distance(mouse.x+x,mouse.y+y);
+					ouput[i]=points[i].distance;
+					ctx.strokeStyle="rgba(200, 0, 1, 1.0)";
 
-			
-	    			ctx.fillStyle="rgba(200, 0, 1, 1.0)";
+		        		ctx.beginPath();	        
+		    			// ctx.fillRect(mouse.x + x, mouse.y + y, 1, 1);	
 
-	        		ctx.beginPath();	        
-	    			ctx.fillRect(mouse.x + x, mouse.y + y, 1, 1);	
-	    			
-	    			console.log(p);
-	    			
-	    			
+					ctx.moveTo(mouse.x,mouse.y);
+					ctx.lineTo(mouse.x+x,mouse.y+y);
+					ctx.stroke();
+		    			console.log("finished" + i);
+					var btn = document.getElementById("save");		    		
+					togo--;	
+					btn.innerHTML = 'Save Output (' + togo +  ' to go)';
+
+				}
 			}
 			
 
@@ -101,14 +115,15 @@ function updateGame() {
 			
 		}
 		frameCounter++;
+		
 	}
 
 	
 }
 
 function distance(x2,y2){
-	var x2=mouse.x;
-	var y2=mouse.y;
+	var x1=mouse.x;
+	var y1=mouse.y;
 	return Math.sqrt( (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) );
 }
 
@@ -157,7 +172,7 @@ function drawGame(){
 	}
 
 //Game Loop
-var ONE_FRAME_TIME = 1000 / 60 ;
+var ONE_FRAME_TIME = 1;//000 / 60 ;
 var mainloop = function() {
 	updateGame();
 	drawGame();
