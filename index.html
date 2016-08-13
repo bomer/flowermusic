@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+
+	<style>
+		html,body{
+			margin:0;
+		}
+		#canvas-container {
+			width: 100%;
+			text-align:center;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="canvas-container">
+		<canvas id="canvas" width="200" height="100" style="border:0px">
+		</canvas>
+	</div>	
+
+	<script>
+
+		var point={};
+		var mouse={};
+		var points=[];
+		var img ;
+		function init() {
+			canvas.width  = window.innerWidth;
+			canvas.height = window.innerHeight;
+			var ctx = canvas.getContext("2d");
+			
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			img= new Image();
+			img.src = 'poppy.jpg';
+			
+	// console.log(img);
+    // ctx.drawImage(img,100,100);
+    img.onload = function() {	
+    	drawImageScaled(img,ctx);
+    };
+
+
+}
+
+init();
+
+
+function drawImageScaled(img, ctx) {
+	var canvas = ctx.canvas ;
+	var hRatio = canvas.width  / img.width    ;
+	var vRatio =  canvas.height / img.height  ;
+	var ratio  = Math.min ( hRatio, vRatio );
+	var centerShift_x = ( canvas.width - img.width*ratio ) / 2;
+	var centerShift_y = ( canvas.height - img.height*ratio ) / 2;  
+	ctx.clearRect(0,0,canvas.width, canvas.height);
+	ctx.drawImage(img, 0,0, img.width, img.height,
+		centerShift_x,centerShift_y,img.width*ratio, img.height*ratio);  
+}
+
+function updateGame() {
+	
+}
+
+function drawGame(){
+	var ctx = canvas.getContext("2d");
+	
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	drawImageScaled(img,ctx);
+
+	if (mouse.x){
+ 		//Draw ball at mouse
+ 		// ctx.drawImage(image, 33, 71, 104, 124, 21, 20, 87, 104);
+	        // ctx.drawImage(image,10,10,150,180);
+	        ctx.fillStyle="rgba(0, 0, 200, 1.0)";
+	        ctx.beginPath();
+	        ctx.arc(mouse.x,mouse.y,10,0,2*Math.PI);
+	        ctx.stroke();
+	        ctx.fill();
+
+	    }
+
+	}
+
+//Game Loop
+var ONE_FRAME_TIME = 1000 / 60 ;
+var mainloop = function() {
+	updateGame();
+	drawGame();
+};
+setInterval( mainloop, ONE_FRAME_TIME );
+
+
+document.onmousedown = function(e) {
+	e = e || window.event
+
+	mouse.x = e.clientX;
+	mouse.y = e.clientY;
+	
+	console.log(e);
+}
+
+
+</script>
+</body>
+</html>
+<!--  -->
