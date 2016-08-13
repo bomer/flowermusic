@@ -77,7 +77,6 @@ function updateGame() {
 		//For every degree
 		for (var i = 0; i < 360; i++) {
 			if (!points[i]){ //if needs initing
-				console.log('Initing '+ i);
 				points[i]={};
 				points[i].steps=getSteps(i);	
 				points[i].done=false;	
@@ -101,8 +100,7 @@ function updateGame() {
 
 					ctx.moveTo(mouse.x,mouse.y);
 					ctx.lineTo(mouse.x+x,mouse.y+y);
-					ctx.stroke();
-		    			console.log("finished" + i);
+					ctx.stroke();		    			
 					var btn = document.getElementById("save");		    		
 					togo--;	
 					btn.innerHTML = 'Save Output (' + togo +  ' to go)';
@@ -187,7 +185,7 @@ document.onmousedown = function(e) {
 	mouse.y = e.clientY;
 	frameCounter=0;
 	
-	console.log(e);
+	
 }
 
 
