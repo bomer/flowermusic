@@ -26,18 +26,18 @@
 		var mouse={};
 		var points=[];
 		var img ;
+		var frameCounter=0;
 		function init() {
 			canvas.width  = window.innerWidth;
 			canvas.height = window.innerHeight;
 			var ctx = canvas.getContext("2d");
-			
+
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 			img= new Image();
 			img.src = 'poppy.jpg';
-			
-	// console.log(img);
-    // ctx.drawImage(img,100,100);
+
+	
     img.onload = function() {	
     	drawImageScaled(img,ctx);
     };
@@ -61,14 +61,86 @@ function drawImageScaled(img, ctx) {
 }
 
 function updateGame() {
+	var ctx = canvas.getContext("2d");
+	// if(frameCounter==0)
+	// 	points = [];
+	if (mouse.x){
+		//For every degree
+		for (var i = 0; i < 360; i++) {
+			if (!points[i]){ //if needs initing
+				console.log('Initing '+ i);
+				points[i]={};
+				points[i].steps=getSteps(i);	
+				points[i].done=false;		
+			}
+				    var x = frameCounter * points[i].steps.x;
+	        		var y = frameCounter * points[i].steps.y;	    			
+			var p = ctx.getImageData(mouse.x+x, mouse.y+y, 1, 1).data; 
+			var r = p[0];
+		    var g = p[1];
+		    var b = p[2];
+			if(r <=0 && g <=0 && b<=0) {
+				points[i].done=true;
+				points[i].distance=distance(mouse.x+x,mouse.y+y);
+			}
+			if(!points[i].done){
+
+			
+	    			ctx.fillStyle="rgba(200, 0, 1, 1.0)";
+
+	        		ctx.beginPath();	        
+	    			ctx.fillRect(mouse.x + x, mouse.y + y, 1, 1);	
+	    			
+	    			console.log(p);
+	    			
+	    			
+			}
+			
+
+
+			
+		}
+		frameCounter++;
+	}
+
 	
 }
 
+function distance(x2,y2){
+	var x2=mouse.x;
+	var y2=mouse.y;
+	return Math.sqrt( (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) );
+}
+
+//Get the x and y increment value for line drawing.
+function getSteps(angle) {
+	angle = radians(angle);
+
+    var cos = Math.cos(angle),
+        sin = Math.sin(angle);
+
+    return {
+        x: cos - sin,
+        y: sin + cos
+    }
+}
+
+// Converts from degrees to radians.
+radians = function(degrees) {
+  return degrees * Math.PI / 180;
+};
+ 
+// Converts from radians to degrees.
+degrees = function(radians) {
+  return radians * 180 / Math.PI;
+};
+
+
 function drawGame(){
 	var ctx = canvas.getContext("2d");
-	
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	drawImageScaled(img,ctx);
+
+	// ctx.clearRect(0, 0, canvas.width, canvas.height);
+	// drawImageScaled(img,ctx);
 
 	if (mouse.x){
  		//Draw ball at mouse
@@ -98,6 +170,7 @@ document.onmousedown = function(e) {
 
 	mouse.x = e.clientX;
 	mouse.y = e.clientY;
+	frameCounter=0;
 	
 	console.log(e);
 }
